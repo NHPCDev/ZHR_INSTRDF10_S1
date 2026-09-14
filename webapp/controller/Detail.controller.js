@@ -187,7 +187,10 @@ sap.ui.define([
                         oViewModel.setProperty("/TransactionRelativesBond", oData.results[0].Form9HeadToRelatives.results.filter(i => i.NatureOfSecurity === "Bonds"));
                         oViewModel.setProperty("/TransactionRelativesEquity", oData.results[0].Form9HeadToRelatives.results.filter(i => i.NatureOfSecurity === "Equity"));
                         oViewModel.setProperty("/formDetails/Status", oData.results[0].Status);
-                        oViewModel.setProperty("/formDetails/UndertakingText", oData.results[0].UndertakingText);
+                        oViewModel.setProperty("/formDetails/UndertakingText", oData.results[0].UndertakingText);   
+                        if(oData.results[0].Status){
+                            oViewModel.setProperty("/formDetails/Designation", oData.results[0].Designation);
+                        }
                         let bFilters = [
                             new Filter(
                                 "Pernr",
@@ -267,12 +270,14 @@ sap.ui.define([
                             oViewModel.setProperty("/formDetails/EmployeeSubgrpText", oResp.results[0].GRADE);
                             oViewModel.setProperty("/formDetails/PersonnelSubArea", oResp.results[0].WERKS);
                             oViewModel.setProperty("/formDetails/PersonnelSubAreaText", oResp.results[0].PLANT);
-                            oViewModel.setProperty("/formDetails/EmployeeDepartment", `${oResp.results[0].DEP_CODE} - ${oResp.results[0].DEP}`);
-                            oViewModel.setProperty("/formDetails/PositionText", oResp.results[0].DESIG);
+                            oViewModel.setProperty("/formDetails/EmployeeDepartment", `${oResp.results[0].DEP_CODE} - ${oResp.results[0].DEP}`);                            
                             oViewModel.setProperty("/formDetails/USRID", oResp.results[0].USRID);
                             oViewModel.setProperty("/formDetails/MOBILE", oResp.results[0].MOBILE);
                             oViewModel.setProperty("/formDetails/EMAIL", oResp.results[0].EMAIL);
                             oViewModel.setProperty("/formDetails/DATE_JOIN", oResp.results[0].DATE_JOIN);
+                            if(sPernr === "New"){
+                                oViewModel.setProperty("/formDetails/Designation", oResp.results[0].DESIG);
+                            }
                         }
                         await this._getHistoryWithRemarksData(oResp.results[0].PERNR);
                         resolve();
@@ -1029,6 +1034,7 @@ sap.ui.define([
                 "EmployeeName": oFormDetails.EmployeeName,
                 "Department": oFormDetails.EmployeeDepartment,
                 "DateOfJoiningDP": oFormDetails.DateOfJoining,
+                Designation: oFormDetails.Designation,
                 Status: this.sActionFlag,
                 Form9HeadToSelf: oHoldingsData,
                 Form9HeadToRelatives: oRelativesData,
