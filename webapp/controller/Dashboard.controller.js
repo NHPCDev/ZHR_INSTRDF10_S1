@@ -128,10 +128,20 @@ sap.ui.define([
         onCreate:async function () {
             var oView = this.getView();
             let oModel = this.getModel();
-            let sProceed = await this.checkValidation();
             let oResourceBundle = this.getResourceBundle();
-            if(!sProceed){
-                messenger.error(oResourceBundle.getText("draftError"));
+            let bDraftValid = await this.checkValidation();
+            if (!bDraftValid) {
+                messenger.error(
+                    oResourceBundle.getText("draftError")
+                );
+                return;
+            }
+            let bForm8Filled = await this.checkForm8Fill();
+            if (!bForm8Filled) {
+                messenger.error(
+                    oResourceBundle.getText("form8FillError")
+                );
+                return;
             }
             const fnFilterFinancialYears = function () {
                 const oTable = this.byId("idDashboardTable");
@@ -184,7 +194,7 @@ sap.ui.define([
                 new Filter(
                     "FormNo",
                     FilterOperator.EQ,
-                    "FORM9"
+                    "FORM10"
                 ),
                 new Filter(
                     "Status",
@@ -199,6 +209,36 @@ sap.ui.define([
                         resolve(oData.results.length === 0);
                     },
                     error: function (oError) {
+                        resolve(false);
+                    }
+                });
+            });
+        },
+        checkForm8Fill: function () {
+            let oModel = this.getModel();
+            let aFilters = [
+                new Filter(
+                    "ApprovalFlag",
+                    FilterOperator.EQ,
+                    "R"
+                )
+            ];
+            return new Promise((resolve) => {
+                oModel.read("/CheckAuthSet", {
+                    filters: aFilters,
+                    success: function (oResponse) {
+                        if (
+                            oResponse.results &&
+                            oResponse.results.length > 0
+                        ) {
+                            let sForm8Fill =
+                                oResponse.results[0].Form8Fill;
+                            resolve(sForm8Fill !== "No");
+                        } else {
+                            resolve(false);
+                        }
+                    },
+                    error: function () {
                         resolve(false);
                     }
                 });
