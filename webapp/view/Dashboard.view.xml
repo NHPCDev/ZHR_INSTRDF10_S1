@@ -37,23 +37,21 @@
                                         selectedKey="{viewModel>/filterData/Fyear}"
                                         change="onComboboxChange"
                                         items="{path: '/FinancialyearF4HSet'}"
-                                        valueState="{viewModel>/valueState/selectedYear}"
-                                        valueStateText="{viewModel>/valueStateText/selectedYear}"
-                                >
-                            <core:ListItem
-                                key="{Year}"
-                                text="{Year}"
-                            />
-                        </ComboBox>
+                                    >
+                                        <core:ListItem
+                                            key="{Year}"
+                                            text="{Year}"
+                                        />
+                                    </ComboBox>
                                 </fb:control>
                             </fb:FilterGroupItem>
-                        </fb:filterGroupItems>                     
+                        </fb:filterGroupItems>
                     </fb:FilterBar>
                 </f:content>
             </f:DynamicPageHeader>
         </f:header>
         <f:content>
-            <VBox id="_IDGenVBox1" class="sapUiSmallMargin">
+            <VBox id="_IDGenVBox1">
                 <Table
                     id="idDashboardTable"
                     items="{
@@ -63,11 +61,6 @@
                             path: 'ApproverFlag',
                             operator: 'EQ',
                             value1:'R'   
-                        },
-                        {
-                            path: 'Status',
-                            operator: 'EQ',
-                            value1:'Confirmed'   
                         },
                         {
                             path:'FormNo',
@@ -119,16 +112,11 @@
                         <Column>
                             <Text text="{i18n>confirmedOn}" />
                         </Column>
-
-                        <Column>
-                            <Text text="{i18n>confirmedBy}" />
-                        </Column>
-
-                        <Column>
-                            <Text text="{i18n>status}" />
-                        </Column>
                         <Column>
                             <Text text="{i18n>delayed}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>status}" />
                         </Column>
                     </columns>
                     <items>
@@ -137,13 +125,17 @@
                             press="onListItemPress"
                         >
                             <cells>
-                            <ObjectIdentifier title="{Fyear}"/>
-                                <ObjectIdentifier title="{Pernr}" text="{EmployeeName}"/>
+                                <ObjectIdentifier title="{Fyear}" />
+                                <ObjectIdentifier
+                                    title="{Pernr}"
+                                    text="{EmployeeName}"
+                                />
                                 <Text
                                     text="{
                                     path: 'CreatedOn',
                                     formatter: '.formatter.formatDate'
-                                }"/>
+                                }"
+                                />
                                 <Text
                                     text="{
                                         path: 'ConfirmedOn',
@@ -156,13 +148,12 @@
                                         }
                                 }"
                                 />
-                                <Text text="{EmployeeName}"></Text>
+                                <Text text="{Delayed}" />
                                 <ObjectStatus
                                     text="{path:'Status', formatter:'.formatter.formatTitleCase'}"
                                     class="sapMObjectStatusMedium statusBoldText"
                                     state="{path:'Status',formatter:'.formatter.formatStatusState'}"
                                 />
-                                <Text text="{Delayed}"></Text>
                             </cells>
                         </ColumnListItem>
                     </items>

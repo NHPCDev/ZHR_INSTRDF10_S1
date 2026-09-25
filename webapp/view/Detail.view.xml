@@ -78,6 +78,13 @@
                                         icon="sap-icon://show"
                                         visible="{= ${viewModel>/formDetails/Status} === 'Approved' || ${viewModel>/formDetails/Status} === 'Confirmed'}"
                                     />
+                                    <Button
+                                        text="{i18n>createNewBtnText}"
+                                        icon="sap-icon://add"
+                                        type="Emphasized"
+                                        press="onNavToForm9"
+                                        visible="{= ${viewModel>/formDetails/Status} === 'New' || ${viewModel>/formDetails/Status} === 'Draft' || ${viewModel>/formDetails/Status} === 'Returned'}"
+                                    />
                                 </uxap:actions>
                             </uxap:ObjectPageDynamicHeaderTitle>
                         </uxap:headerTitle>

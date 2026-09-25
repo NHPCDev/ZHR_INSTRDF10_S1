@@ -30,6 +30,7 @@ sap.ui.define([
             let oModel = this.getModel();
             oViewModel.setProperty("/selectedYear", sSelectedYear);
             oViewModel.setProperty("/nextYear", sSelectedYear.split("-")[1]);
+            let oResourceBundle = this.getResourceBundle();
             if (sPernr === "New") {
                 oViewModel.setProperty("/TransactionHolding", []);
                 oViewModel.setProperty("/TransactionRelatives", []);
@@ -42,11 +43,14 @@ sap.ui.define([
                 let aPernr = oViewModel.getProperty("/formDetails/EmployeeId");
                 await this.setFormDetails(aPernr, sSelectedYear);
                 oViewModel.setProperty("/formDetails/Status", "New");
+                this.byId("objPageHeader").setText(oResourceBundle.getText("createDialogTitle"));
+                this.byId("objPageHeader1").setText(oResourceBundle.getText("createDialogTitle"));
             } else {
                 await this.setFormDetails(sPernr, sSelectedYear);
                 await this.setUndertakingText();
                 await this.getDefaultEmployeeDetails(sPernr);
-
+                this.byId("objPageHeader").setText(oResourceBundle.getText("detailPageTitle", sSelectedYear));
+                this.byId("objPageHeader1").setText(oResourceBundle.getText("detailPageTitle", sSelectedYear));
             }
             let Filters = [];
             let sPernrName = oViewModel.getProperty("/formDetails/EmployeeId");
@@ -298,7 +302,8 @@ sap.ui.define([
             var oVM = this.getModel("viewModel");
             var aFilters = [
                 new Filter("Pernr", FilterOperator.EQ, Pernr),
-                new Filter("FormNo", FilterOperator.EQ, "FORM10")
+                new Filter("FormNo", FilterOperator.EQ, "FORM10"),
+                new Filter("ApplicationNo", FilterOperator.EQ, oVM.getProperty("/selectedYear"))
             ];
 
             oModel.read("/RemarkHistorySet", {
@@ -1070,7 +1075,7 @@ sap.ui.define([
             oCrossAppNavigator.toExternal({
                 target: {
                     semanticObject: "SecurityHoldings",
-                    action: "Manage"
+                    action: "manage"
                 },
                 params: {
                     selectedYear: [oViewModel.getProperty("/selectedYear")]
@@ -1081,7 +1086,7 @@ sap.ui.define([
             let oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
             oCrossAppNavigator.toExternal({
                 target: {
-                    semanticObject: "managedependentdetails",
+                    semanticObject: "ManageDependentDetails",
                     action: "manage"
                 }
             });

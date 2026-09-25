@@ -27,8 +27,7 @@
                         <ComboBox
                             id="idFyear"
                             width="100%"
-                            selectedItem="{viewModel>/selectedYear}"
-                            selectedKey="{viewModel>/selectedYear}"
+                            selectedKey="{viewModel>/selectedFinancialYear}"
                             change="onComboboxChange"
                             items="{path: '/FinancialYearF4H2Set'}"
                             valueState="{viewModel>/valueState/selectedYear}"

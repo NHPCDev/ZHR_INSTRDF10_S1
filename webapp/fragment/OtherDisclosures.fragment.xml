@@ -9,9 +9,9 @@
             <Title
                 text="{= ${i18n>otherDisclosures} + ' (' + ${viewModel>/OtherDisclosuresLength} + ')' }"
             />
-            <ToolbarSpacer ></ToolbarSpacer>
+            <ToolbarSpacer />
             <Button
-                text="{i18n>addBtnText}"
+                text="{i18n>createOtherDisclosures}"
                 icon="sap-icon://add"
                 type="Accept"
                 press="onNavToForm11"
@@ -43,17 +43,23 @@
                 <Column>
                     <Text text="{i18n>phoneNoofImmediateRelative}" />
                 </Column>
-                <Column >
-                    <Text text="{i18n>panOfImmediateRelative}"></Text>
+                <Column>
+                    <Text text="{i18n>panOfImmediateRelative}" />
                 </Column>
                 <Column>
-                    <Text text="{i18n>nameOfPersonWhomDesignatedSharesMaternalRelation}" />
+                    <Text
+                        text="{i18n>nameOfPersonWhomDesignatedSharesMaternalRelation}"
+                    />
                 </Column>
-                <Column >
-                    <Text text="{i18n>mobileOfPersonWhomDesignatedSharesMaternalRelation}"></Text>
+                <Column>
+                    <Text
+                        text="{i18n>mobileOfPersonWhomDesignatedSharesMaternalRelation}"
+                    />
                 </Column>
-                <Column >
-                    <Text text="{i18n>panOfPersonWhomDesignatedSharesMaternalRelation}"></Text>
+                <Column>
+                    <Text
+                        text="{i18n>panOfPersonWhomDesignatedSharesMaternalRelation}"
+                    />
                 </Column>
             </columns>
             <items>
@@ -66,8 +72,8 @@
                         <Text text="{viewModel>RelationOfImmediateRelative}" />
                         <Text text="{viewModel>PhoneNoOfImmediateRelative}" />
                         <Text text="{viewModel>PanOfImmediateRelative}" />
-                        <Text text="{viewModel>NameOfFinancialGuide}"></Text>
-                        <Text text="{viewModel>PhoneNoOfFinancialGuide}"></Text>
+                        <Text text="{viewModel>NameOfFinancialGuide}" />
+                        <Text text="{viewModel>PhoneNoOfFinancialGuide}" />
                         <Text text="{viewModel>PanOfOfFinancialGuide}" />
                     </cells>
                 </ColumnListItem>

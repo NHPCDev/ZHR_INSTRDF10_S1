@@ -8,9 +8,10 @@ sap.ui.define([
     "com/nhpc/zhrinstrdf10s1/utils/formatter",
     "com/nhpc/zhrinstrdf10s1/utils/messenger",
     "sap/ui/core/BusyIndicator",
-], (BaseController, Filter, FilterOperator, Spreadsheet, Fragment, ValueState, formatter, messenger, BusyIndicator) => {
+    "sap/ui/export/library"
+], (BaseController, Filter, FilterOperator, Spreadsheet, Fragment, ValueState, formatter, messenger, BusyIndicator,exportLibrary) => {
     "use strict";
-
+    var EdmType = exportLibrary.EdmType;
     return BaseController.extend("com.nhpc.zhrinstrdf10s1.controller.Dashboard", {
         formatter: formatter,
         onInit() {
@@ -72,6 +73,22 @@ sap.ui.define([
                     and: false
                 }));
             }
+            if (oFilterData.ConfirmedOn) {
+                let aFilters = [];
+                aFilters.push(new Filter("ConfirmedOn", FilterOperator.EQ, oFilterData.ConfirmedOn));
+                aSearchFilter.push(new Filter({
+                    filters: aFilters,
+                    and: false
+                }));
+            }
+            if (oFilterData.Status) {
+                let aFilters = [];
+                aFilters.push(new Filter("Status", FilterOperator.EQ, oFilterData.Status));
+                aSearchFilter.push(new Filter({
+                    filters: aFilters,
+                    and: false
+                }));
+            }
             return {
                 aFilters: aSearchFilter.length
                     ? [new Filter({
@@ -108,9 +125,14 @@ sap.ui.define([
         //         this._CreateDialog.open();
         //     }
         // },
-        onCreate: function () {
+        onCreate:async function () {
             var oView = this.getView();
             let oModel = this.getModel();
+            let sProceed = await this.checkValidation();
+            let oResourceBundle = this.getResourceBundle();
+            if(!sProceed){
+                messenger.error(oResourceBundle.getText("draftError"));
+            }
             const fnFilterFinancialYears = function () {
                 const oTable = this.byId("idDashboardTable");
                 const oBinding = oTable.getBinding("items");
@@ -151,13 +173,44 @@ sap.ui.define([
                 this._CreateDialog.open();
             }
         },
+        checkValidation: async function () {
+            let oModel = this.getModel();
+            let aFilters = [
+                new Filter(
+                    "ApproverFlag",
+                    FilterOperator.EQ,
+                    "R"
+                ),
+                new Filter(
+                    "FormNo",
+                    FilterOperator.EQ,
+                    "FORM9"
+                ),
+                new Filter(
+                    "Status",
+                    FilterOperator.EQ,
+                    "Draft"
+                )
+            ];
+            return new Promise((resolve) => {
+                oModel.read("/Form9headSet", {
+                    filters: aFilters,
+                    success: function (oData) {
+                        resolve(oData.results.length === 0);
+                    },
+                    error: function (oError) {
+                        resolve(false);
+                    }
+                });
+            });
+        },
         onCloseDialog: function () {
             this._CreateDialog.close();
         },
-        onYearSelect: function () {
+        onYearSelect: function (oEvent) {
             let oViewModel = this.getModel("viewModel");
             let oResourceBundle = this.getResourceBundle();
-            let sSelectedYear = oViewModel.getProperty("/selectedYear");
+            let sSelectedYear = oViewModel.getProperty("/selectedFinancialYear");
             if (!sSelectedYear) {
                 oViewModel.setProperty("/valueState/selectedYear", "Error");
                 oViewModel.setProperty("/valueStateText/selectedYear", oResourceBundle.getText("selectedYearErrorMsg"));
@@ -189,62 +242,29 @@ sap.ui.define([
             );
             oViewModel.setProperty("/valueState/selectedYear", "None");
             oViewModel.setProperty("/valueStateText/selectedYear", "");
+            oViewModel.setProperty("/selectedFinancialYear","");
             this.getRouter().navTo("RouteDetail", {
                 selectedYear: sSelectedYear,
                 Pernr: "New",
             });
         },
         onDownload: function () {
-            var oModel = this.getModel();
-            let oResourceBundle = this.getResourceBundle();
-            var aFilters = [
-                new sap.ui.model.Filter(
-                    "ApproverFlag",
-                    sap.ui.model.FilterOperator.EQ,
-                    "R"
-                ),
-                new sap.ui.model.Filter(
-                    "Status",
-                    sap.ui.model.FilterOperator.EQ,
-                    "Confirmed"
-                ),
-                new sap.ui.model.Filter(
-                    "FormNo",
-                    sap.ui.model.FilterOperator.EQ,
-                    "FORM10"
-                )
-            ];
-            BusyIndicator.show(0);
-            oModel.read("/Form9headSet", {
-                filters: aFilters,
-                success: function (oData) {
-                    var aData = oData.results.map(function (oData) {
-                        var oRow = Object.assign({}, oData);
-                        oRow.CreatedOn = formatter.formatDate(oRow.CreatedOn);
-                        oRow.ConfirmedOn = formatter.formatDate(oRow.ConfirmedOn);
-                        return oRow;
-                    });
-                    var aCols = this.createColumnConfig();
-                    var oSettings = {
-                        workbook: {
-                            columns: aCols
-                        },
-                        dataSource: aData,
-                        fileType: "xlsx",
-                        fileName: this.getResourceBundle().getText("title")
-                    };
-                    var oSheet = new Spreadsheet(oSettings);
-                    oSheet.build()
-                        .finally(function () {
-                            oSheet.destroy();
-                            BusyIndicator.hide();
-                        });
-                }.bind(this),
-                error: function () {
-                    BusyIndicator.hide();
-                    messenger.error(oResourceBundle.getText("failedToDownloadData"));
-                }
-            });
+            var oTable = this.byId("idDashboardTable");
+            var oBinding = oTable.getBinding("items");
+            var aCols = this.createColumnConfig();
+            var oSettings = {
+                workbook: {
+                    columns: aCols
+                },
+                dataSource: oBinding,
+                fileType: "xlsx",
+                fileName: this.getResourceBundle().getText("title")
+            };
+            var oSheet = new Spreadsheet(oSettings);
+            oSheet.build()
+                .finally(function () {
+                    oSheet.destroy();
+                });
         },
         createColumnConfig: function () {
             var aCols = [];
@@ -263,22 +283,24 @@ sap.ui.define([
             aCols.push({
                 label: this.getResourceBundle().getText("createdOn"),
                 property: "CreatedOn",
+                type: EdmType.Date,
+                inputFormat: "yyyymmdd",
+                format: "dd.mm.yyyy"
             });
             aCols.push({
                 label: this.getResourceBundle().getText("confirmedOn"),
                 property: "ConfirmedOn",
-            });
-            aCols.push({
-                label: this.getResourceBundle().getText("confirmedBy"),
-                property: "EmployeeName"
-            });
-            aCols.push({
-                label: this.getResourceBundle().getText("status"),
-                property: "Status"
+                type: EdmType.Date,
+                inputFormat: "yyyymmdd",
+                format: "dd.mm.yyyy"
             });
             aCols.push({
                 label: this.getResourceBundle().getText("delayed"),
                 property: "Delayed"
+            });
+            aCols.push({
+                label: this.getResourceBundle().getText("status"),
+                property: "Status"
             });
             return aCols;
         },
