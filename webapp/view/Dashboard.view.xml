@@ -36,7 +36,7 @@
                                         width="100%"
                                         selectedKey="{viewModel>/filterData/Fyear}"
                                         change="onComboboxChange"
-                                        items="{path: '/FinancialyearF4HSet'}"
+                                        items="{path: '/FinancialYearF4H2Set'}"
                                     >
                                         <core:ListItem
                                             key="{Year}"

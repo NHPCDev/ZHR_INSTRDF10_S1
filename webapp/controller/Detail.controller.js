@@ -46,8 +46,10 @@ sap.ui.define([
                 this.byId("objPageHeader").setText(oResourceBundle.getText("createDialogTitle"));
                 this.byId("objPageHeader1").setText(oResourceBundle.getText("createDialogTitle"));
             } else {
-                await this.setFormDetails(sPernr, sSelectedYear);
                 await this.setUndertakingText();
+                //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+                await this.setFormDetails(sPernr, sSelectedYear); 
+                //End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change               
                 await this.getDefaultEmployeeDetails(sPernr);
                 this.byId("objPageHeader").setText(oResourceBundle.getText("detailPageTitle", sSelectedYear));
                 this.byId("objPageHeader1").setText(oResourceBundle.getText("detailPageTitle", sSelectedYear));
@@ -88,20 +90,30 @@ sap.ui.define([
             let oModel = this.getModel();
             let oViewModel = this.getModel("viewModel");
             let oFilter = new Filter("Preview", FilterOperator.EQ, "X");
+            //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+            let oResourceBundle = this.getResourceBundle();
+            //End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
             await new Promise((resolve, reject) => {
                 BusyIndicator.show(0);
                 oModel.read("/Form10_textSet", {
-                    // filters: [oFilter],
-                    // urlParameters: {
-                    //     "$expand": "Form9HeadToSelf,Form9HeadToRelatives"
-                    // },
                     success: function (oData) {
                         BusyIndicator.hide();
                         if (oData.results.length === 0) {
-                            messenger.error("No Data Found");
+                            //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+                            messenger.error(oResourceBundle.getText("noDataFound"));
+                            //End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
                             return;
                         }
                         oViewModel.setProperty("/formDetails/UndertakingText", oData.results[0].Undertaking);
+                        //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+                        oViewModel.setProperty("/formDetails/HeaderText", oData.results[0].HeaderText);
+                        oViewModel.setProperty("/undertakingDocs", [
+                            {
+                                text: oData.results[0].Undertaking,
+                                selected: false
+                            }
+                        ]);
+                        //End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
                         resolve();
                     },
                     error: function (oError) {
@@ -191,8 +203,11 @@ sap.ui.define([
                         oViewModel.setProperty("/TransactionRelativesBond", oData.results[0].Form9HeadToRelatives.results.filter(i => i.NatureOfSecurity === "Bonds"));
                         oViewModel.setProperty("/TransactionRelativesEquity", oData.results[0].Form9HeadToRelatives.results.filter(i => i.NatureOfSecurity === "Equity"));
                         oViewModel.setProperty("/formDetails/Status", oData.results[0].Status);
-                        oViewModel.setProperty("/formDetails/UndertakingText", oData.results[0].UndertakingText);   
-                        if(oData.results[0].Status){
+                        //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+                        // oViewModel.setProperty("/formDetails/UndertakingText", oData.results[0].UndertakingText);
+                        oViewModel.setProperty("/undertakingDocs/0/selected", oData.results[0].Undertakingflg === "X");
+                        //End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+                        if (oData.results[0].Status) {
                             oViewModel.setProperty("/formDetails/Designation", oData.results[0].Designation);
                         }
                         let bFilters = [
@@ -274,12 +289,12 @@ sap.ui.define([
                             oViewModel.setProperty("/formDetails/EmployeeSubgrpText", oResp.results[0].GRADE);
                             oViewModel.setProperty("/formDetails/PersonnelSubArea", oResp.results[0].WERKS);
                             oViewModel.setProperty("/formDetails/PersonnelSubAreaText", oResp.results[0].PLANT);
-                            oViewModel.setProperty("/formDetails/EmployeeDepartment", `${oResp.results[0].DEP_CODE} - ${oResp.results[0].DEP}`);                            
+                            oViewModel.setProperty("/formDetails/EmployeeDepartment", `${oResp.results[0].DEP_CODE} - ${oResp.results[0].DEP}`);
                             oViewModel.setProperty("/formDetails/USRID", oResp.results[0].USRID);
                             oViewModel.setProperty("/formDetails/MOBILE", oResp.results[0].MOBILE);
                             oViewModel.setProperty("/formDetails/EMAIL", oResp.results[0].EMAIL);
                             oViewModel.setProperty("/formDetails/DATE_JOIN", oResp.results[0].DATE_JOIN);
-                            if(sPernr === "New"){
+                            if (sPernr === "New") {
                                 oViewModel.setProperty("/formDetails/Designation", oResp.results[0].DESIG);
                             }
                         }
@@ -1047,7 +1062,10 @@ sap.ui.define([
                 Todate: oFormDetails.Todate,
                 FormNo: "FORM10",
                 Fyear: sFyear,
-                Delayed: sStatus
+                Delayed: sStatus,
+                //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
+                Undertakingflg: oViewModel.getProperty("/undertakingDocs/0/selected") === true ? "X" : ""
+                //End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
             };
             let sNo = oViewModel.getProperty("/sNo");
             if (sNo) {
@@ -1082,7 +1100,7 @@ sap.ui.define([
                 }
             });
         },
-        onNavToForm11:function(){
+        onNavToForm11: function () {
             let oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
             oCrossAppNavigator.toExternal({
                 target: {
