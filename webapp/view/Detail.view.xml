@@ -38,7 +38,7 @@
                                             />
                                             <ObjectStatus
                                                 title="{i18n>status}"
-                                                text="{path:'viewModel>/formDetails/Status',formatter:'.formatter.formatTitleCase'}"
+                                                text="{path:'viewModel>/formDetails/StatusText',formatter:'.formatter.formatTitleCase'}"
                                                 class="sapMObjectStatusMedium statusBoldText"
                                                 state="{path:'viewModel>/formDetails/Status',formatter:'.formatter.formatStatusState'}"
                                             />
@@ -63,7 +63,7 @@
                                             />
                                             <ObjectStatus
                                                 title="{i18n>status}"
-                                                text="{path:'viewModel>/formDetails/Status',formatter:'.formatter.formatTitleCase'}"
+                                                text="{path:'viewModel>/formDetails/StatusText',formatter:'.formatter.formatTitleCase'}"
                                                 class="sapMObjectStatusMedium statusBoldText"
                                                 state="{path:'viewModel>/formDetails/Status',formatter:'.formatter.formatStatusState'}"
                                             />
@@ -76,7 +76,7 @@
                                         type="Emphasized"
                                         press="handlePreviewBtnPress"
                                         icon="sap-icon://show"
-                                        visible="{= ${viewModel>/formDetails/Status} === 'Approved' || ${viewModel>/formDetails/Status} === 'Confirmed'}"
+                                        visible="{= ${viewModel>/formDetails/Status} === '03' || ${viewModel>/formDetails/Status} === '02'}"
                                     />
                                 </uxap:actions>
                             </uxap:ObjectPageDynamicHeaderTitle>
@@ -200,7 +200,7 @@
                             <uxap:ObjectPageSection
                                 title="{i18n>historyRemarks}"
                                 titleUppercase="false"
-                                visible="{= ${viewModel>/formDetails/Status} === 'Confirmed' || ${viewModel>/formDetails/Status} === 'Returned'}"
+                                visible="{= ${viewModel>/formDetails/Status} === '02' || ${viewModel>/formDetails/Status} === '04'}"
                             >
                                 <uxap:subSections>
                                     <uxap:ObjectPageSubSection>
@@ -226,14 +226,14 @@
                             type="Critical"
                             press="handleSaveBtnPress"
                             icon="sap-icon://save"
-                            visible="{= ${viewModel>/formDetails/Status} !== 'Confirmed'}"
+                            visible="{= ${viewModel>/formDetails/Status} !== '02'}"
                         />
                         <Button
                             text="{i18n>submitBtnText}"
                             type="Success"
                             press="handleSubmitBtnPress"
                             icon="sap-icon://create"
-                            visible="{= ${viewModel>/formDetails/Status} !== 'Confirmed'}"
+                            visible="{= ${viewModel>/formDetails/Status} !== '02'}"
                         />
                     </OverflowToolbar>
                 </footer>

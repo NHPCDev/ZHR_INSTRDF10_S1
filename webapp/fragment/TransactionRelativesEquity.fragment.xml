@@ -18,7 +18,7 @@
                 icon="sap-icon://add"
                 type="Accept"
                 press="onNavToForm9"
-                visible="{= ${viewModel>/formDetails/Status} === 'New' || ${viewModel>/formDetails/Status} === 'Draft' || ${viewModel>/formDetails/Status} === 'Returned'}"
+                visible="{= ${viewModel>/formDetails/Status} === 'New' || ${viewModel>/formDetails/Status} === '01' || ${viewModel>/formDetails/Status} === '04'}"
             />
             <!-- End of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change -->
         </Toolbar>

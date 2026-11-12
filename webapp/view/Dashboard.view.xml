@@ -36,7 +36,7 @@
                                         width="100%"
                                         selectedKey="{viewModel>/filterData/Fyear}"
                                         change="onComboboxChange"
-                                        items="{path: '/FinancialYearF4H2Set'}"
+                                        items="{path: '/FinancialyearF4HSet'}"
                                     >
                                         <core:ListItem
                                             key="{Year}"
@@ -150,7 +150,7 @@
                                 />
                                 <Text text="{Delayed}" />
                                 <ObjectStatus
-                                    text="{path:'Status', formatter:'.formatter.formatTitleCase'}"
+                                    text="{path:'StatusText', formatter:'.formatter.formatTitleCase'}"
                                     class="sapMObjectStatusMedium statusBoldText"
                                     state="{path:'Status',formatter:'.formatter.formatStatusState'}"
                                 />

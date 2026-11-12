@@ -199,7 +199,7 @@ sap.ui.define([
                 new Filter(
                     "Status",
                     FilterOperator.EQ,
-                    "Draft"
+                    "01"
                 )
             ];
             return new Promise((resolve) => {
@@ -340,7 +340,7 @@ sap.ui.define([
             });
             aCols.push({
                 label: this.getResourceBundle().getText("status"),
-                property: "Status"
+                property: "StatusText"
             });
             return aCols;
         },

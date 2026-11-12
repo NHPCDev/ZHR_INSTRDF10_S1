@@ -43,6 +43,7 @@ sap.ui.define([
                 let aPernr = oViewModel.getProperty("/formDetails/EmployeeId");
                 await this.setFormDetails(aPernr, sSelectedYear);
                 oViewModel.setProperty("/formDetails/Status", "New");
+                oViewModel.setProperty("/formDetails/StatusText", "New");
                 this.byId("objPageHeader").setText(oResourceBundle.getText("createDialogTitle"));
                 this.byId("objPageHeader1").setText(oResourceBundle.getText("createDialogTitle"));
             } else {
@@ -203,6 +204,7 @@ sap.ui.define([
                         oViewModel.setProperty("/TransactionRelativesBond", oData.results[0].Form9HeadToRelatives.results.filter(i => i.NatureOfSecurity === "Bonds"));
                         oViewModel.setProperty("/TransactionRelativesEquity", oData.results[0].Form9HeadToRelatives.results.filter(i => i.NatureOfSecurity === "Equity"));
                         oViewModel.setProperty("/formDetails/Status", oData.results[0].Status);
+                        oViewModel.setProperty("/formDetails/StatusText", oData.results[0].StatusText);
                         //Start of Change: 06.11.2026: Balamurugan : Declaration Added, Create button added at table level and total value label change
                         // oViewModel.setProperty("/formDetails/UndertakingText", oData.results[0].UndertakingText);
                         oViewModel.setProperty("/undertakingDocs/0/selected", oData.results[0].Undertakingflg === "X");
@@ -976,7 +978,7 @@ sap.ui.define([
             var oModel = this.getModel();
             messenger.confirm(sTitle, sText, "Confirm", null, function () {
                 BusyIndicator.show(0);
-                this.sActionFlag = "Draft";
+                this.sActionFlag = "01";
                 let oPayload = this.createRequestPayload();
                 oModel.create("/Form9headSet", oPayload, {
                     success: function (oResp) {
@@ -996,12 +998,12 @@ sap.ui.define([
             var oResourceBundle = this.getResourceBundle(),
                 sTitle = oResourceBundle.getText("CONFIRM_TITLE"),
                 sText = oResourceBundle.getText("CONFIRM_TEXT_FINAL_REQUEST"),
-                bProceed = true;
+                bProceed = this.validateSubmitRequestDetails();
             var oModel = this.getModel();
             if (bProceed) {
                 messenger.confirm(sTitle, sText, "Confirm", null, function () {
                     BusyIndicator.show(0);
-                    this.sActionFlag = "Confirmed";
+                    this.sActionFlag = "02";
                     let oPayload = this.createRequestPayload();
                     oModel.create("/Form9headSet", oPayload, {
                         success: function (oResp) {
@@ -1022,13 +1024,12 @@ sap.ui.define([
             let oResourceBundle = this.getResourceBundle();
             let bProceed = true;
             let oViewModel = this.getModel("viewModel");
-            let aHoldingsDataBond = oViewModel.getProperty("/TransactionHoldingBond") || [];
-            let aRelativesDataBond = oViewModel.getProperty("/TransactionRelativesBond") || [];
-            let aHoldingsDataEquity = oViewModel.getProperty("/TransactionHoldingEquity") || [];
-            let aRelativesDataEquity = oViewModel.getProperty("/TransactionRelativesEquity") || [];
-            if (aHoldingsDataBond.length === 0 && aRelativesDataBond.length === 0 && aHoldingsDataEquity.length === 0 && aRelativesDataEquity.length === 0) {
-                bProceed = false;
-                messenger.error(oResourceBundle.getText("atLeastOneLineItemErrorMsg"));
+            const aUndertakingDocs = oViewModel.getProperty("/undertakingDocs") || [];
+            const bAllSelected = aUndertakingDocs.length > 0 &&
+                aUndertakingDocs.every(oDoc => oDoc.selected === true);
+            if (!bAllSelected) {
+                messenger.error(oResourceBundle.getText("undertakingErrorMsg"));
+                return;
             }
             return bProceed;
         },
