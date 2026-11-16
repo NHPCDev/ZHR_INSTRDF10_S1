@@ -46,7 +46,7 @@
                 <Column>
                     <Text text="{i18n>panOfImmediateRelative}" />
                 </Column>
-                <Column>
+                <!-- <Column>
                     <Text
                         text="{i18n>nameOfPersonWhomDesignatedSharesMaternalRelation}"
                     />
@@ -60,7 +60,7 @@
                     <Text
                         text="{i18n>panOfPersonWhomDesignatedSharesMaternalRelation}"
                     />
-                </Column>
+                </Column> -->
             </columns>
             <items>
                 <ColumnListItem>
@@ -72,9 +72,9 @@
                         <Text text="{viewModel>RelationOfImmediateRelative}" />
                         <Text text="{viewModel>PhoneNoOfImmediateRelative}" />
                         <Text text="{viewModel>PanOfImmediateRelative}" />
-                        <Text text="{viewModel>NameOfFinancialGuide}" />
+                        <!-- <Text text="{viewModel>NameOfFinancialGuide}" />
                         <Text text="{viewModel>PhoneNoOfFinancialGuide}" />
-                        <Text text="{viewModel>PanOfOfFinancialGuide}" />
+                        <Text text="{viewModel>PanOfOfFinancialGuide}" /> -->
                     </cells>
                 </ColumnListItem>
             </items>
